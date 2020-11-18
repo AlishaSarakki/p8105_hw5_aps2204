@@ -126,16 +126,14 @@ path_df %>%
 pivot_longer(week_1:week_8,
                names_to = "week",
                names_prefix = "week_",
-               values_to = "observation") 
-#%>% 
-#   ggplot(aes(x = week, y = observation, group = subject_id, color = subject_id)) +
-#  geom_path() +
-#  labs(
-#    title = "Observations over time",
-#    x = "Week",
-#    y = "Observation"
-#  ) + 
-#  viridis::scale_color_viridis(discrete = TRUE) + 
-#  theme(legend.position = "bottom")
+               values_to = "observation") %>% 
+   ggplot(aes(x = week, y = observation, group = subject_id, color = experiment_group)) +
+   geom_path() +
+  labs(
+    title = "Observations over time",
+    x = "Week",
+    y = "Observation"
+  ) + 
+  theme(legend.position = "bottom")
 ```
 
