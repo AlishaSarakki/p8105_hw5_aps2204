@@ -7,6 +7,7 @@ library(tidyverse)
 library(purrr)
 library(rvest)
 library(dplyr)
+library(stringr)
 
 
 knitr::opts_chunk$set(
@@ -93,15 +94,21 @@ results_df %>%
 ```{r}
 path_df = 
   tibble(
-  path = list.files("lda_data"),
-) %>% 
-  mutate(path = str_c("lda_data/", path),
-         data = map(.x = path, ~ read_csv(.x))) #end up with column that ends up with each dataframes for each participants next to path that goes to each participant
+  path = list.files("lda_data")) %>% 
+  mutate(
+    path = str_c("lda_data/", path),
+    data = map(.x = path, ~ read_csv(.x))) %>% 
+  unnest(data)
 
-
-
-
-
+path_df %>% 
+  str_replace_all("lda_data/", "") %>% 
+  str_replace_all(".csv", "") %>% 
+ 
+  #separate(path, into = c("exp_group", "subject_id")) %>% 
+ 
+  
+  #separate(path, into = c("exp_group", "subject_id")) %>% 
+  view()
 # you'll want to pivot at some point to format appropriately
 # control vs. experimental, week 1-8, which observation 
 
