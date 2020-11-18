@@ -108,9 +108,9 @@ path_df =
   
   separate(subject_id, into = c("exp_id", "throwaway"), sep = ".csv") %>% 
   select(-"throwaway") %>% 
-  separate(exp_id, into = c("experiment_group", "subject_id"), sep = "_") %>% 
+  separate(exp_id, into = c("experiment_arm", "subject_id"), sep = "_") %>% 
   mutate(
-    experiment_group = recode(experiment_group, con = "control", exp = "experimental")
+    experiment_arm = recode(experiment_arm, con = "control", exp = "experimental")
   ) %>% 
   view()
 # you'll want to pivot at some point to format appropriately
@@ -127,13 +127,13 @@ pivot_longer(week_1:week_8,
                names_to = "week",
                names_prefix = "week_",
                values_to = "observation") %>% 
-   ggplot(aes(x = week, y = observation, group = subject_id, color = experiment_group)) +
+   ggplot(aes(x = week, y = observation, group = subject_id, color = experiment_arm)) +
    geom_path() +
   labs(
-    title = "Observations over time",
+    title = "Observations over Time for 20 Subjects in the Experimental and Control Study Arms",
     x = "Week",
     y = "Observation"
   ) + 
   theme(legend.position = "bottom")
 ```
-
+Based on this plot, is apparent that the experimental arm of the study has higher observed values on average than the control arm. Further, the experimental arm appears to have an overall upward trend over time, while the control arm appears to have an overall downward trend over time. The spread of observations in both arms appears to decrease between weeks 7 and 8, though this may simply be a product of how the data is not displayed after week 8. The experimental arm appears to display the same amount of spread as the control arm.
