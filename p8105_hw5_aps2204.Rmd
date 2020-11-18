@@ -91,6 +91,8 @@ results_df %>%
 
 
 ## Problem 2
+
+Read and tidy data
 ```{r}
 path_df = 
   tibble(
@@ -101,22 +103,39 @@ path_df =
   unnest(data) %>% 
   separate(path, into = c("exp_group", "subject_id"), sep = "/") %>% 
   select(-"exp_group") %>% 
- #using str_replace alters the dataframe completely; the only solution is to keep separating out the columns and deleting them. 
+
+  #using str_replace altered the dataframe completely; the only solution is to keep separating out the columns and deleting them. 
+  
   separate(subject_id, into = c("exp_id", "throwaway"), sep = ".csv") %>% 
   select(-"throwaway") %>% 
   separate(exp_id, into = c("experiment_group", "subject_id"), sep = "_") %>% 
-
-#path_df %>% 
-  #str_replace_all("lda_data/", "") %>% 
-  #str_replace_all(".csv", "") %>% 
- 
-  #separate(path, into = c("exp_group", "subject_id")) %>% 
- 
-  
-  #separate(path, into = c("exp_group", "subject_id")) %>% 
+  mutate(
+    experiment_group = recode(experiment_group, con = "control", exp = "experimental")
+  ) %>% 
   view()
 # you'll want to pivot at some point to format appropriately
 # control vs. experimental, week 1-8, which observation 
 
+```
+
+
+
+Spaghetti time.
+```{r}
+path_df %>% 
+pivot_longer(week_1:week_8,
+               names_to = "week",
+               names_prefix = "week_",
+               values_to = "observation") 
+#%>% 
+#   ggplot(aes(x = week, y = observation, group = subject_id, color = subject_id)) +
+#  geom_path() +
+#  labs(
+#    title = "Observations over time",
+#    x = "Week",
+#    y = "Observation"
+#  ) + 
+#  viridis::scale_color_viridis(discrete = TRUE) + 
+#  theme(legend.position = "bottom")
 ```
 
