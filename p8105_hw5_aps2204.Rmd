@@ -98,11 +98,17 @@ path_df =
   mutate(
     path = str_c("lda_data/", path),
     data = map(.x = path, ~ read_csv(.x))) %>% 
-  unnest(data)
+  unnest(data) %>% 
+  separate(path, into = c("exp_group", "subject_id"), sep = "/") %>% 
+  select(-"exp_group") %>% 
+ #using str_replace alters the dataframe completely; the only solution is to keep separating out the columns and deleting them. 
+  separate(subject_id, into = c("exp_id", "throwaway"), sep = ".csv") %>% 
+  select(-"throwaway") %>% 
+  separate(exp_id, into = c("experiment_group", "subject_id"), sep = "_") %>% 
 
-path_df %>% 
-  str_replace_all("lda_data/", "") %>% 
-  str_replace_all(".csv", "") %>% 
+#path_df %>% 
+  #str_replace_all("lda_data/", "") %>% 
+  #str_replace_all(".csv", "") %>% 
  
   #separate(path, into = c("exp_group", "subject_id")) %>% 
  
