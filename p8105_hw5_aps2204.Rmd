@@ -135,6 +135,7 @@ pivot_longer(week_1:week_8,
     y = "Observation Value"
   ) 
 ```
+
 Based on this plot, it is apparent that the experimental arm of the study has higher observed values on average than the control arm. Further, the experimental arm appears to have an overall upward trend over time, while the control arm appears to have an overall downward trend over time. The spread of observations in both arms appears to decrease between weeks 7 and 8, though this may simply be a product of how the data is not displayed after week 8. The experimental arm appears to display the same amount of spread as the control arm.
 
 
@@ -145,7 +146,42 @@ Based on this plot, it is apparent that the experimental arm of the study has hi
 
 Building a function
 ```{r}
-framework_3 = rnorm(30, mean = 0, sd = 5)
+#simulate datasets and conduct t-tests. Start with sim mean and sd function + modify to export results of a t-test instead
 
+sim_3 = function(sample_size = 30, mu, sigma = 5) {
+  
+  sim_data = tibble(
+    x = rnorm(n = sample_size, mean = mu, sd = sigma),
+  )
+  
+  t_test_3 = 
+    t.test(sim_data, mu = 0, conf.level = .95) %>% 
+    broom::tidy()
+  
+  sim_data %>% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x),
+      p_value = pull(t_test_3, p.value)
+    )}
+
+output = vector("list", length = 5000)
+
+
+# for (i in 1:6) {
+#  output[[i]] = sim_3([[i]])
+# }
+
+# for plots: filter and show where p-value is less than .05, then compute mean. Will be summaries of p-values and estimates, according to whether things are significant or not
+```
+apply the function
+```{r}
+sim_3(30, 0, 5)
+sim_3(30, 1, 5)
+sim_3(30, 2, 5)
+sim_3(30, 3, 5)
+sim_3(30, 4, 5)
+sim_3(30, 5, 5)
+sim_3(30, 6, 5)
 ```
 
