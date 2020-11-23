@@ -168,14 +168,82 @@ sim_3 = function(sample_size = 30, mu, sigma = 5) {
 output = vector("list", length = 5000)
 
 
-# for (i in 1:6) {
-#  output[[i]] = sim_3([[i]])
-# }
-
 # for plots: filter and show where p-value is less than .05, then compute mean. Will be summaries of p-values and estimates, according to whether things are significant or not
 ```
-apply the function
+
+
+apply the function, put everything into a dataframe
 ```{r}
+sim_3_results = 
+  
+  tibble(mu = c(0,1,2,3,4,5,6)) %>%
+  
+  mutate(
+    outputs = map(.x = mu, ~rerun(5000, sim_3(mu = .x))),
+    dfs = map(outputs, bind_rows)) %>% 
+  
+  select(-outputs) %>% 
+  unnest(dfs) %>% 
+  view()
+  
+```
+
+Plot 1
+```{r}
+# proportion of times mu was rejected. I know I should use a for loop here but my brain is fried and I can't seem to figure it out :(
+
+mu_0_significant = 
+  sim_3_results %>% 
+  filter(mu == 0, p_value <= 0.05) %>% 
+  nrow() #246
+246/5000
+
+mu_1_significant =
+  sim_3_results %>% 
+  filter(mu == 1, p_value <= 0.05) %>% 
+  nrow() #919
+919/5000
+
+mu_2_significant = 
+  sim_3_results %>% 
+  filter(mu == 2, p_value <= 0.05) %>% 
+  nrow() #2812
+2812/5000
+
+
+mu_3_significant = 
+  sim_3_results %>% 
+  filter(mu == 3, p_value <= 0.05) %>% 
+  nrow()  #4433
+4433/5000
+
+
+mu_4_significant = 
+  sim_3_results %>% 
+  filter(mu == 4, p_value <= 0.05) %>% 
+  nrow()  #4942
+4942/5000
+
+
+mu_5_significant = 
+  sim_3_results %>% 
+  filter(mu == 5, p_value <= 0.05) %>% 
+  nrow() #4996
+4996/5000
+
+
+mu_6_significant = 
+  sim_3_results %>% 
+  filter(mu == 6, p_value <= 0.05) %>% 
+  nrow() #5000
+5000/5000
+
+
+
+
+
+# calculate true mean of each - tried doing it as before, tried parsing it out of the overall dataframe, but was unable to. This method is not ideal, as this basically runs it once, which increases the variability (these are not necessarily the true means)
+
 sim_3(30, 0, 5)
 sim_3(30, 1, 5)
 sim_3(30, 2, 5)
@@ -183,5 +251,25 @@ sim_3(30, 3, 5)
 sim_3(30, 4, 5)
 sim_3(30, 5, 5)
 sim_3(30, 6, 5)
+
+true_mean <- c(0,1,2,3,4,5,6)
+proportion_significant <- c(0.0492, 0.01838, 0.5624, 0.8866, 0.9884, 0.9992, 1)
+est_mean <- c(-0.62223, 2.7388, 2.0618, 2.08644, 4.2561, 4.113835, 5.0026)
+
+plot_1 = data.frame(true_mean, est_mean, proportion_significant)
+
+plot_1 %>% 
+ggplot(aes(x = true_mean, y = proportion_significant, group = true_mean)) +
+   geom_point() +
+  labs(
+    title = "Power of the test",
+    x = "true_mean",
+    y = "proportion_significant"
+  )
+
 ```
+Power and effect size have positive correlation with each other. This appears to be some sort of logistic curve, which makes sense, as true mean values further from 0 are far more likely to be statistically significantly different from 0. 
+
+
+
 
